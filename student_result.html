@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STUDENT RESULT MANAGEMENT PORTAL</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<style>
+  :root {
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --card-bg: #ffffff;
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    --radius: 12px;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--bg-gradient) !important;
+    min-height: 100vh;
+    padding: 30px 20px;
+    color: var(--text-main);
+  }
+
+  .web_container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .web_header {
+    color: #ffffff;
+    margin-bottom: 25px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .web_header h2 {
+    font-size: 25px;
+    font-weight: bold;
+  }
+
+  .student_grid {
+    display: grid;
+    grid-template-columns: 450px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .form_card h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .input-group label {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .input-group input {
+    padding: 10px 10px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px !important;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .input-group input:focus {
+    border-color: var(--primary);
+  }
+
+  .score_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-hover);
+  }
+
+  .stats_row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stats_card {
+    background: white;
+    padding: 18px;
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: var(--shadow);
+  }
+
+  .stats-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .stats-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .table_cont {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .search-box input {
+    padding: 9px 14px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    width: 260px;
+    font-size: 14px;
+  }
+
+  .filters-tabs {
+    display: flex;
+    gap: 6px;
+    background: #0f172a;
+    padding: 4px;
+    border-radius: 8px;
+  }
+
+  .tab {
+    padding: 6px 14px;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .tab.active {
+    background: white;
+    color: var(--text-main);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .table_wrapper {
+    max-height: 380px;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .table_wrapper table thead th {
+    position: sticky;
+    top: 0;
+    background-color: var(--card-bg);
+    z-index: 2;
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  th {
+    padding: 12px 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  td {
+    padding: 14px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  /* MOBILE CARD VIEW CONTAINER (Hidden on Desktop) */
+  .mobile_card_list {
+    display: none;
+  }
+
+  /* RESPONSIVE BREAKPOINTS */
+  @media screen and (max-width: 1024px) {
+    .student_grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    body {
+      padding: 12px 8px;
+    }
+
+    .web_header h2 {
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .card {
+      padding: 16px;
+    }
+
+    .score_grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stats_row {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stats_card {
+      padding: 12px;
+    }
+
+    .stats-value {
+      font-size: 20px;
+    }
+
+    .table_cont {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .search-box input {
+      width: 100%;
+    }
+
+    .filters-tabs {
+      justify-content: center;
+      width: 100%;
+    }
+
+    .filters-tabs .tab {
+      flex: 1;
+      text-align: center;
+    }
+
+    /* Hide standard desktop table on mobile */
+    .table_wrapper {
+      display: none;
+    }
+
+    /* Enable mobile card list view */
+    .mobile_card_list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .mob_student_card {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mob_card_header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 15px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    .mob_scores_grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      text-align: center;
+      font-size: 12px;
+      background: #ffffff;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .mob_scores_grid div span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    .mob_summary_row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .mob_delete_btn {
+      width: 100%;
+      padding: 8px;
+      font-size: 13px;
+    }
+  }
+</style>
+<body>
+    <div class="web_container">
+        <header class="web_header">
+            <div class="brand">
+                <span class="logo icon"></span>
+            </div>
+            <h2>Student Result Management System</h2>
+        </header>
+    </div>
+    
+    <div class="student_grid">
+        <div class="card form_card">
+            <h2>Enter student score</h2>
+
+            <form action="" id="student_form">
+                <div class="input-group">
+                    <label for="StudentName">Student Name</label>
+                    <input type="text" id="StudentName" required placeholder="enter name">
+                </div>
+
+                <div class="score_grid">
+                  <div class="input-group">
+                    <label for="Math">Mathematics</label>
+                    <input type="number" id="Math" required placeholder="enter score" min="0" max="100">
+                </div>
+                
+                  <div class="input-group">
+                    <label for="English">English</label>
+                    <input type="number" id="English" required placeholder="enter score" min="0" max="100">
+                </div>
+                  
+                 <div class="input-group">
+                    <label for="Computer">Computer Science</label>
+                    <input type="number" id="Computer" required placeholder="enter score" min="0" max="100">
+                </div>
+
+                 <div class="input-group">
+                    <label for="Science">Science</label>
+                    <input type="number" id="Science" required placeholder="enter score" min="0" max="100">
+                </div>
+                </div>
+
+                <button type="button" id="submitBtn" class="btn btn-primary">
+                    <span>+</span> Add Student Result
+                </button>
+            </form>
+        </div>
+
+        <main class="main_contents">
+            <div class="stats_row">
+                <div class="stats_card">
+                    <span class="stats-title">Total Students</span>
+                    <span class="stats-value" id="statTotal">0</span>  
+                </div>
+
+                <div class="stats_card">
+                    <span class="stats-title">Highest scores</span>
+                    <span class="stats-value" id="statHighest">0</span>  
+                </div>
+
+                <div class="stats_card">
+                    <span class="stats-title">Lowest scores</span>
+                    <span class="stats-value" id="statLowest">0</span>  
+                </div>
+
+                <div class="stats_card">
+                    <span class="stats-title">Class Average</span>
+                    <span class="stats-value" id="statAverage">0</span>  
+                </div>
+
+                <div class="stats_card">
+                    <span class="stats-title">Student Pass</span>
+                    <span class="stats-value" id="statPass">0</span>  
+                </div>
+
+                <div class="stats_card">
+                    <span class="stats-title">Student Failed</span>
+                    <span class="stats-value" id="statFailed">0</span>  
+                </div>
+            </div>
+
+            <section class="card table_card">
+                <div class="table_cont">
+                    <div class="search-box">
+                        <input type="text" id="search-input" placeholder="search students by name">
+                    </div>
+
+                    <div class="filters-tabs">
+                        <button class="tab active" data_filter="all">All</button>
+                        <button class="tab" data_filter="passed">Passed</button>
+                        <button class="tab" data_filter="failed">Failed</button>
+                    </div>
+                </div>
+
+                <!-- Desktop Table Wrapper -->
+                <div class="table_wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Math</th>
+                                <th>Eng</th>
+                                <th>Sci</th>
+                                <th>Comp</th>
+                                <th>Total</th>
+                                <th>Avg</th>
+                                <th>Grade</th>
+                                <th>Delete</th>  
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody">
+                            <!-- added students appear here (desktop) -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Card List View (Visible only on small screens) -->
+                <div class="mobile_card_list" id="mobileCardList">
+                    <!-- added students appear here (mobile cards) -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+<script src="/js/bootstrap.min.js"></script>
+<script>
+let students = [];
+let initailFiltres = 'all';
+
+const studentform = document.getElementById("student_form");
+const studentName = document.getElementById("StudentName");
+const mathStudent = document.getElementById("Math");
+const engStudent = document.getElementById("English");
+const computerStudent = document.getElementById("Computer");
+const scienceStudent = document.getElementById("Science");
+const resultTableBody = document.getElementById("studentTableBody");
+const mobileCardList = document.getElementById("mobileCardList");
+const searchInput = document.getElementById("search-input");
+const submitBtn = document.getElementById("submitBtn");
+
+function calculateTotal(scores) {
+  return scores.reduce((sum, score) => sum + score, 0);
+}
+
+function calculateAverage(total, count) {
+  return count > 0 ? Math.round((total / count) * 10) / 10 : 0;
+}
+
+function calculateGrade(avg) {
+  if (avg >= 70) return "A";
+  if (avg >= 60) return "B";
+  if (avg >= 50) return "C";
+  if (avg >= 45) return "D";
+  return "F";
+}
+
+function getRemark(grade) {
+  return grade !== "F" ? "Passed" : "Failed";
+}
+
+function addStudent(name, math, english, computer, science) {
+  const m = Number(math) || 0;
+  const e = Number(english) || 0;
+  const c = Number(computer) || 0;
+  const s = Number(science) || 0;
+
+  const subjectScores = [m, e, c, s];
+  const total = calculateTotal(subjectScores);
+  const average = calculateAverage(total, subjectScores.length);
+  const grade = calculateGrade(average);
+  const remark = getRemark(grade);
+
+  const newStudent = {
+    id: Date.now(),
+    name: name.trim(),
+    subjectScore: { math: m, english: e, computer: c, science: s },
+    total: total,
+    average: average,
+    grade: grade,
+    remark: remark
+  };
+
+  students.push(newStudent);
+  saveToLocalStorage();
+  displayStudents();
+}
+
+function deleteStudent(id) {
+  const index = students.findIndex(student => student.id === id);
+  if (index !== -1) {
+    students.splice(index, 1);
+    saveToLocalStorage();
+    displayStudents();
+  }
+}
+
+function calculateStatistics() {
+  const totalCount = document.getElementById("statTotal");
+  const statHighest = document.getElementById("statHighest");
+  const statLowest = document.getElementById("statLowest");
+  const statAverage = document.getElementById("statAverage");
+  const statPass = document.getElementById("statPass");
+  const statFailed = document.getElementById("statFailed");
+
+  if (students.length === 0) {
+    if (totalCount) totalCount.textContent = "0";
+    if (statHighest) statHighest.textContent = "0";
+    if (statLowest) statLowest.textContent = "0";
+    if (statAverage) statAverage.textContent = "0";
+    if (statPass) statPass.textContent = "0";
+    if (statFailed) statFailed.textContent = "0";
+    return;
+  }
+
+  totalCount.textContent = students.length;
+
+  let highest = Number(students[0].average);
+  let lowest = Number(students[0].average);
+  let totalSum = 0;
+  let passCount = 0;
+  let failCount = 0;
+
+  for (let i = 0; i < students.length; i++) {
+    const avg = Number(students[i].average);
+    totalSum += avg;
+
+    if (avg > highest) highest = avg;
+    if (avg < lowest) lowest = avg;
+
+    if (students[i].grade !== "F") {
+      passCount++;
+    } else {
+      failCount++;
+    }
+  }
+
+  if (statHighest) statHighest.textContent = Math.round(highest * 10) / 10;
+  if (statLowest) statLowest.textContent = Math.round(lowest * 10) / 10;
+  if (statAverage) statAverage.textContent = Math.round((totalSum / students.length) * 10) / 10;
+  if (statPass) statPass.textContent = passCount;
+  if (statFailed) statFailed.textContent = failCount;
+}
+
+function displayStudents() {
+  const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : "";
+  
+  const filteredStudents = students.filter(student => {
+    const matchesSearch = student.name.toLowerCase().includes(searchTerm);
+    let matchesFilter = true;
+
+    if (initailFiltres === "passed") {
+      matchesFilter = student.grade !== "F";
+    } else if (initailFiltres === "failed") {
+      matchesFilter = student.grade === "F";
+    }
+    return matchesSearch && matchesFilter;
+  });
+
+  // Render Desktop Table
+  if (resultTableBody) {
+    resultTableBody.innerHTML = "";
+    filteredStudents.forEach(student => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${student.name}</td>
+        <td>${student.subjectScore.math}</td>
+        <td>${student.subjectScore.english}</td>
+        <td>${student.subjectScore.science}</td>
+        <td>${student.subjectScore.computer}</td>
+        <td>${student.total}</td>
+        <td>${student.average}</td>
+        <td>${student.grade}</td>
+        <td>
+          <button class="delete-btn border border-0 px-3 py-1 bg-primary text-white rounded rounded-2" onclick="deleteStudent(${student.id})">Delete</button>
+        </td>
+      `;
+      resultTableBody.appendChild(row);
+    });
+  }
+
+  // Render Mobile Cards
+  if (mobileCardList) {
+    mobileCardList.innerHTML = "";
+    if (filteredStudents.length === 0) {
+      mobileCardList.innerHTML = `<p style="text-align:center; color: var(--text-muted); padding: 15px;">No students found.</p>`;
+    } else {
+      filteredStudents.forEach(student => {
+        const cardDiv = document.createElement("div");
+        cardDiv.className = "mob_student_card";
+        cardDiv.innerHTML = `
+          <div class="mob_card_header">
+            <span>${student.name}</span>
+            <span class="badge bg-primary" style="font-size:12px;">Grade: ${student.grade}</span>
+          </div>
+          <div class="mob_scores_grid">
+            <div><span>Math</span>${student.subjectScore.math}</div>
+            <div><span>Eng</span>${student.subjectScore.english}</div>
+            <div><span>Sci</span>${student.subjectScore.science}</div>
+            <div><span>Comp</span>${student.subjectScore.computer}</div>
+          </div>
+          <div class="mob_summary_row">
+            <span><strong>Total:</strong> ${student.total}</span>
+            <span><strong>Avg:</strong> ${student.average}%</span>
+            <span><strong>Status:</strong> ${student.remark}</span>
+          </div>
+          <button class="btn btn-primary mob_delete_btn" onclick="deleteStudent(${student.id})">Delete Student</button>
+        `;
+        mobileCardList.appendChild(cardDiv);
+      });
+    }
+  }
+
+  calculateStatistics();
+}
+
+if (searchInput) {
+  searchInput.addEventListener("input", displayStudents);
+}
+
+function setFilters(filterTypes) {
+  initailFiltres = filterTypes;
+  displayStudents();
+}
+
+const filterButtons = document.querySelectorAll(".filters-tabs .tab");
+filterButtons.forEach(button => {
+  button.addEventListener("click", function() {
+    filterButtons.forEach(btn => btn.classList.remove("active"));
+    this.classList.add("active");
+    const filterValue = this.getAttribute("data_filter");
+    setFilters(filterValue);
+  });
+});
+
+if (submitBtn) {
+  submitBtn.addEventListener("click", function(event) {
+    event.preventDefault();
+
+    if (!studentName.value.trim()) {
+      alert("Please enter a student name.");
+      return;
+    }
+    if (
+      mathStudent.value === "" ||
+      engStudent.value === "" ||
+      computerStudent.value === "" ||
+      scienceStudent.value === ""
+    ) {
+      alert("Please fill in all subject scores.");
+      return;
+    }
+
+    addStudent(
+      studentName.value,
+      mathStudent.value,
+      engStudent.value,
+      computerStudent.value,
+      scienceStudent.value
+    );
+
+    if (studentform) studentform.reset();
+  });
+}
+
+function saveToLocalStorage() {
+  localStorage.setItem("studentData", JSON.stringify(students));
+}
+
+function loadFromLocalStorage() {
+  const savedData = localStorage.getItem("studentData");
+  if (savedData) {
+    try {
+      students = JSON.parse(savedData);
+    } catch (e) {
+      students = [];
+    }
+    displayStudents();
+  }
+}
+
+loadFromLocalStorage();
+</script>
+</body>
+</html>
